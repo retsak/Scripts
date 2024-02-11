@@ -34,7 +34,7 @@ foreach ($cacheSet in $windowsUpdateCacheSets) {
             if ($propertyName -notin $allowedGPCacheValues -and $propertyName -inotlike 'PS*') {
                 $confirmation = Read-Host "Are you sure you want to delete $propertyName from $cacheSetName? (yes/no)"
                 if ($confirmation -eq 'yes') {
-                    $windowsUpdateCacheSet.DeleteValue($propertyName)
+                    #$windowsUpdateCacheSet.DeleteValue($propertyName)
                     Write-Host "Deleted $propertyName from $cacheSetName"
                 }
             }
@@ -73,12 +73,12 @@ $cacheSets | ForEach-Object {
                 if ($propertyName -notin $GPCacheListofAllowedValues -and $propertyName -inotlike 'PS*') {
                     # Attempt to delete the property
                     try {
-                        Remove-ItemProperty -Path $cacheSet.PSPath -Name $propertyName
+                        #Remove-ItemProperty -Path $cacheSet.PSPath -Name $propertyName
                         Write-Host "Deleted $propertyName from $cacheSetName"
                     }
                     catch {
                         # Handle errors gracefully and log the error
-                        Write-Error "Error deleting property $propertyName from $cacheSetName: $_"
+                        Write-Error "Error deleting property $propertyName from $($cacheSetName): $_"
                     }
                 }
             }
