@@ -1,4 +1,6 @@
 #Reference: https://learn.microsoft.com/en-us/windows/win32/wua_sdk/searching--downloading--and-installing-updates
+#Succes and Error Codes: https://learn.microsoft.com/en-us/windows/win32/wua_sdk/wua-success-and-error-codes-
+#Networking Error Codes: https://learn.microsoft.com/en-us/windows/win32/wua_sdk/wua-networking-error-codes-
 
 # Define the server selection and service ID
 $serverSelection = 3
