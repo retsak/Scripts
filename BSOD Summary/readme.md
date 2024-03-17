@@ -51,7 +51,7 @@ $BugCheckSummary.GetEnumerator() | ForEach-Object {
 
 ## Instructions for Use
 
-1. Copy the script into a PowerShell script file (e.g., `DetectBSODs.ps1`).
+1. Copy the script into a PowerShell script file (e.g., `detection.ps1`).
 2. Run the script in a PowerShell session with administrative privileges to access the system event logs.
 3. The script outputs the count of BSOD events in the last 30 days, summarized by the bug check code. Use the bug check codes to reference the provided Microsoft documentation for details about each type of BSOD.
 
