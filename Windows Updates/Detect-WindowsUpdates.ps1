@@ -13,13 +13,28 @@ $updateSearcher.ServerSelection = $serverSelection
 $updateSearcher.ServiceID = $serviceId
 
 # Search for updates
-$searchResult = $updateSearcher.Search("IsInstalled=0")
+try {
+    # Configuration and search setup omitted for brevity
 
-# Check if there are updates available
-if ($searchResult.Updates.Count -eq 0) {
-    # No updates available, exit with code 0 (no issue detected)
-    exit 0
-} else {
-    # Updates available, exit with code 1 (issue detected)
+    # Search for updates
+    $searchResult = $updateSearcher.Search("IsInstalled=0")
+
+    # Interpret search result
+    if ($searchResult.Updates.Count -eq 0) {
+        Write-Output "No updates available."
+        exit 0
+    } else {
+        Write-Output "Updates found."
+        exit 1
+    }
+} catch [System.Exception] {
+    $errorCode = $_.Exception.HResult
+    $errorMessage = switch ($errorCode) {
+        0x8024001E { "Operation did not complete because the service or system was being shut down." }
+        0x80240024 { "There are no updates." }
+        0x8024402F { "There were errors during the download process but it completed successfully anyway." }
+        default { "An unexpected error occurred: $_" }
+    }
+    Write-Output $errorMessage
     exit 1
 }

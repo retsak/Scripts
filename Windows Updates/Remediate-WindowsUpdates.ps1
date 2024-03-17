@@ -31,12 +31,27 @@ $updateInstaller = $updateSession.CreateUpdateInstaller()
 $updateInstaller.Updates = $updatesToDownload
 
 # Install the updates
-$installationResult = $updateInstaller.Install()
+try {
+    # Configuration, search, and download setup omitted for brevity
 
-# Log the installation result
-if ($installationResult.ResultCode -eq 2) {
-    Write-Output "All updates were successfully installed."
-} else {
-    Write-Output "Some updates were not installed."
-    # Consider adding more detailed logging or error handling here
+    # Install the updates
+    $installationResult = $updateInstaller.Install()
+
+    # Interpret installation result
+    if ($installationResult.ResultCode -ne 2) {
+        Write-Output "Installation failed."
+        exit 1
+    } else {
+        Write-Output "All updates were successfully installed."
+    }
+} catch [System.Exception] {
+    $errorCode = $_.Exception.HResult
+    $errorMessage = switch ($errorCode) {
+        0x8024001E { "Operation did not complete because the service or system was being shut down." }
+        0x80240024 { "There are no updates." }
+        0x8024402F { "There were errors during the installation process but it completed successfully anyway." }
+        default { "An unexpected error occurred: $_" }
+    }
+    Write-Output $errorMessage
+    exit 1
 }
