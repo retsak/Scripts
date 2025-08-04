@@ -1,0 +1,499 @@
+//==================================================================
+//
+// Configuration.mof - WMI configuration that will be compiled on
+//    SMS clients.
+//
+// Copyright (c) Microsoft Corporation, All Rights Reserved
+//
+//==================================================================
+
+
+//==================================================================
+// Define registry classes for inventory reporting
+//
+// - Registry key/value class definition should be done in cimv2,
+// - SMS class definition should be done in cimv2\\sms
+//==================================================================
+
+//----------------------
+// Add Remove Programs
+//----------------------
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+
+[ dynamic,
+  provider("RegProv"),
+  ClassContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+]
+class Win32Reg_AddRemovePrograms
+{
+    [key]
+        string    ProdID;
+    [PropertyContext("DisplayName")]
+        string    DisplayName;
+    [PropertyContext("InstallDate")]
+        string    InstallDate;
+    [PropertyContext("Publisher")  ]
+        string    Publisher;
+    [PropertyContext("DisplayVersion")]
+        string    Version;
+};
+
+[ dynamic,
+  provider("RegProv"),
+  ClassContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+]
+class Win32Reg_AddRemovePrograms64
+{
+    [key]
+        string    ProdID;
+    [PropertyContext("DisplayName")]
+        string    DisplayName;
+    [PropertyContext("InstallDate")]
+        string    InstallDate;
+    [PropertyContext("Publisher")  ]
+        string    Publisher;
+    [PropertyContext("DisplayVersion")]
+        string    Version;
+};
+//----------------------
+// Virtual PC
+//----------------------
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+
+[DYNPROPS]
+class Win32Reg_SMSGuestVirtualMachine
+{
+    [key]
+        string InstanceKey;
+        string PhysicalHostName;
+        string PhysicalHostNameFullyQualified;
+};
+
+[DYNPROPS]
+instance of Win32Reg_SMSGuestVirtualMachine
+{
+    InstanceKey = "VPCKey";
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Virtual Machine\\Guest\\Parameters|PhysicalHostName"),
+                    Dynamic, Provider("RegPropProv")]
+        PhysicalHostName;
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Virtual Machine\\Guest\\Parameters|PhysicalHostNameFullyQualified"),
+                    Dynamic, Provider("RegPropProv")]
+        PhysicalHostNameFullyQualified;
+};
+
+[DYNPROPS]
+class Win32Reg_SMSGuestVirtualMachine64
+{
+    [key]
+        string InstanceKey;
+        string PhysicalHostName;
+        string PhysicalHostNameFullyQualified;
+};
+
+[DYNPROPS]
+instance of Win32Reg_SMSGuestVirtualMachine64
+{
+    InstanceKey = "VPCKey";
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Virtual Machine\\Guest\\Parameters|PhysicalHostName"),
+                    Dynamic, Provider("RegPropProv")]
+        PhysicalHostName;
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Virtual Machine\\Guest\\Parameters|PhysicalHostNameFullyQualified"),
+                    Dynamic, Provider("RegPropProv")]
+        PhysicalHostNameFullyQualified;
+};
+
+//----------------------
+// Advanced Client Ports
+//----------------------
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+
+#pragma deleteclass("Win32Reg_SMSAdvancedClientPorts", NOFAIL)
+
+[DYNPROPS]
+class Win32Reg_SMSAdvancedClientPorts
+{
+    [key]
+        string InstanceKey;
+        uint32 PortName;
+        uint32 HttpsPortName;
+};
+
+[DYNPROPS]
+instance of Win32Reg_SMSAdvancedClientPorts
+{
+    InstanceKey = "SMSPortKey";
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\CCM|HttpPort"),
+                    Dynamic, Provider("RegPropProv")]
+        PortName;
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\CCM|HttpsPort"),
+                    Dynamic, Provider("RegPropProv")]
+        HttpsPortName;
+};
+
+
+
+//--------------------------------------------
+// Advanced Client SSL Security COnfigurations
+//--------------------------------------------
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+
+#pragma deleteclass("Win32Reg_SMSAdvancedClientSSLConfiguration", NOFAIL)
+
+[DYNPROPS]
+class Win32Reg_SMSAdvancedClientSSLConfiguration
+{
+    [key]
+        string InstanceKey;
+        uint32 HttpsStateFlags;
+        string CertificateStore;
+        string CertificateSelectionCriteria;
+        string InternetMPHostName;
+        uint32 SelectFirstCertificate;
+        uint32 ClientAlwaysOnInternet;
+};
+
+[DYNPROPS]
+instance of Win32Reg_SMSAdvancedClientSSLConfiguration
+{
+    InstanceKey = "SMSSSLConfiguration";
+
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\CCM|HttpsState"),
+        Dynamic, Provider("RegPropProv")]
+    HttpsStateFlags;
+
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\CCM\\Security|Certificate Store"),
+        Dynamic, Provider("RegPropProv")]
+    CertificateStore;
+
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\CCM\\Security|Certificate Selection Criteria"),
+        Dynamic, Provider("RegPropProv")]
+    CertificateSelectionCriteria;
+
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\SMS\\Client\\Internet Facing|Internet MP Hostname"),
+        Dynamic, Provider("RegPropProv")]
+    InternetMPHostName;
+
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\CCM\\Security|Select First Certificate"),
+        Dynamic, Provider("RegPropProv")]
+    SelectFirstCertificate;
+
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Microsoft\\CCM\\Security|ClientAlwaysOnInternet"),
+        Dynamic, Provider("RegPropProv")]
+    ClientAlwaysOnInternet;
+};
+
+// Declare the class to prevent older clients from sending error status messages
+#pragma namespace("\\\\.\\root")
+instance of __Namespace
+{
+	Name = "ccm" ;
+};
+#pragma namespace("\\\\.\\root\\ccm")
+instance of __Namespace
+{
+	Name = "SoftwareMeteringAgent" ;
+};
+#pragma namespace("\\\\.\\root\\ccm\\SoftwareMeteringAgent")
+class CCM_RecentlyUsedApps
+{
+   [Key]
+   string FolderPath;
+
+   [Key]
+   string ExplorerFileName;
+
+   [Key]
+   string LastUserName;
+
+   string OriginalFileName;
+   string FileVersion;
+   uint32 FileSize;
+   string ProductName;
+   string ProductVersion;
+   string CompanyName;
+   uint32 ProductLanguage;
+   string FileDescription;
+   uint32 LaunchCount;
+   datetime LastUsedTime;
+
+   string ProductCode;
+   string AdditionalProductCodes;
+   string msiDisplayName;
+   string msiPublisher;
+   string msiVersion;
+   string SoftwarePropertiesHash;
+   string FilePropertiesHash;
+};
+
+
+#pragma namespace("\\\\.\\root")
+instance of __Namespace
+{
+	Name = "ccm" ;
+};
+
+#pragma namespace("\\\\.\\root\\ccm")
+
+
+//--------------------------------------------
+// CCM_LogicalMemoryConfiguration
+//--------------------------------------------
+#pragma namespace("\\\\.\\root\\cimv2")
+
+[Union,ViewSources{"select Name,FreeVirtualMemory,SizeStoredInPagingFiles,TotalVisibleMemorySize,TotalVirtualMemorySize from Win32_OperatingSystem"},ViewSpaces{"\\\\.\\root\\cimv2"},
+dynamic,Provider("MS_VIEW_INSTANCE_PROVIDER")]
+class CCM_LogicalMemoryConfiguration
+{
+    [PropertySources{"FreeVirtualMemory"}]
+    uint64          AvailableVirtualMemory;
+    [PropertySources{"Name"},key]
+    string          Name;
+    [PropertySources{"SizeStoredInPagingFiles"}]
+    uint64          TotalPageFileSpace;
+    [PropertySources{"TotalVisibleMemorySize"}]
+    uint64          TotalPhysicalMemory;
+    [PropertySources{"TotalVirtualMemorySize"}]
+    uint64          TotalVirtualMemory;
+};
+
+//----------------------
+// Windows Update
+//----------------------
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+#pragma deleteclass("Win32Reg_SMSWindowsUpdate", NOFAIL)
+
+[DYNPROPS]
+class Win32Reg_SMSWindowsUpdate
+{   
+   [key]string    InstanceKey;
+        uint32    UseWUServer;
+        uint32    NoAutoUpdate;
+        uint32    AUOptions;
+};
+
+[DYNPROPS]
+instance of Win32Reg_SMSWindowsUpdate
+{   
+    InstanceKey = "Windows Update";
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU|UseWUServer"), Dynamic, Provider("RegPropProv")]
+        UseWUServer;
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU|NoAutoUpdate"), Dynamic, Provider("RegPropProv")]
+        NoAutoUpdate;
+    [PropertyContext("local|HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU|AUOptions"), Dynamic, Provider("RegPropProv")]
+        AUOptions;
+};
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+
+//----------------------
+// Office365ProPlusConfigurations
+//----------------------
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+#pragma deleteclass("Office365ProPlusConfigurations", NOFAIL)
+
+[DYNPROPS]
+Class Office365ProPlusConfigurations
+{
+	[key] string KeyName;
+	String InstallationPath;
+	String ClientFolder;
+	String VersionToReport;
+	String ClientCulture;
+	String CDNBaseUrl;
+	String UpdatesEnabled;
+  String AutoUpgrade;
+	String UpdateChannel;
+  String cfgUpdateChannel;
+	String Platform;
+	String UpdateUrl;
+	String SharedComputerLicensing;
+	String GPOChannel;
+  String UpdatePath;
+	String LastScenario;
+	String LastScenarioResult;
+	String OfficeMgmtCOM;
+  String CCMManaged;
+  String GPOOfficeMgmtCOM;
+};
+
+[DYNPROPS]
+Instance of Office365ProPlusConfigurations
+{
+	KeyName="Office365ProPlusConfigurations";
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|InstallationPath"),Dynamic,Provider("RegPropProv")] InstallationPath;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|ClientFolder"),Dynamic,Provider("RegPropProv")] ClientFolder;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|VersionToReport"),Dynamic,Provider("RegPropProv")] VersionToReport;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|ClientCulture"),Dynamic,Provider("RegPropProv")] ClientCulture;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|CDNBaseUrl"),Dynamic,Provider("RegPropProv")] CDNBaseUrl;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|UpdatesEnabled"),Dynamic,Provider("RegPropProv")] UpdatesEnabled;
+  [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|AutoUpgrade"),Dynamic,Provider("RegPropProv")] AutoUpgrade;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|updatechannel"),Dynamic,Provider("RegPropProv")] UpdateChannel;
+  [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|updatechannel"),Dynamic,Provider("RegPropProv")] cfgUpdateChannel;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|Platform"),Dynamic,Provider("RegPropProv")] Platform;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|UpdateUrl"),Dynamic,Provider("RegPropProv")] UpdateUrl;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|SharedComputerLicensing"),Dynamic,Provider("RegPropProv")] SharedComputerLicensing;
+  [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|updatebranch"),Dynamic,Provider("RegPropProv")] GPOChannel;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|updatepath"),Dynamic,Provider("RegPropProv")] UpdatePath;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun|LastScenario"),Dynamic,Provider("RegPropProv")] LastScenario;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun|LastScenarioResult"),Dynamic,Provider("RegPropProv")] LastScenarioResult;
+	[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|OfficeMgmtCOM"),Dynamic,Provider("RegPropProv")] OfficeMgmtCOM;
+  [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\{B7F1785F-D69B-46F1-92FC-D2DE9C994F13}|(Default)"),Dynamic,Provider("RegPropProv")] CCMManaged;
+  [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|officemgmtcom"),Dynamic,Provider("RegPropProv")] GPOOfficeMgmtCOM;
+};
+
+
+//===================================================
+// Microsoft BitLocker Administration and Monitoring 
+//===================================================
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+#pragma deleteclass("Win32_BitLockerEncryptionDetails", NOFAIL) 
+[Union, ViewSources{"select DeviceId, BitlockerPersistentVolumeId, BitLockerManagementPersistentVolumeId, BitLockerManagementVolumeType, DriveLetter, Compliant, ReasonsForNonCompliance, KeyProtectorTypes, EncryptionMethod, ConversionStatus, ProtectionStatus, IsAutoUnlockEnabled, NoncomplianceDetectedDate, EnforcePolicyDate from Mbam_Volume"}, ViewSpaces{"\\\\.\\root\\microsoft\\mbam"}, dynamic, Provider("MS_VIEW_INSTANCE_PROVIDER")]
+class Win32_BitLockerEncryptionDetails
+{
+    [PropertySources{"DeviceId"},key]
+    String     DeviceId;
+    [PropertySources{"BitlockerPersistentVolumeId"}]
+    String     BitlockerPersistentVolumeId;
+    [PropertySources{"BitLockerManagementPersistentVolumeId"}]
+    String     MbamPersistentVolumeId;
+    //UNKNOWN = 0, OS_Volume = 1, FIXED_VOLUME = 2, REMOVABLE_VOLUME = 3
+    [PropertySources{"BitLockerManagementVolumeType"}]
+    SInt32     MbamVolumeType;
+    [PropertySources{"DriveLetter"}]
+    String     DriveLetter;
+    //VOLUME_NOT_COMPLIANT = 0, VOLUME_COMPLIANT = 1, NOT_APPLICABLE = 2
+    [PropertySources{"Compliant"}]
+    SInt32     Compliant;
+    [PropertySources{"ReasonsForNonCompliance"}]
+    SInt32     ReasonsForNonCompliance[];
+    [PropertySources{"KeyProtectorTypes"}]
+    SInt32     KeyProtectorTypes[];
+    [PropertySources{"EncryptionMethod"}]
+    SInt32     EncryptionMethod;
+    [PropertySources{"ConversionStatus"}]
+    SInt32     ConversionStatus;
+    [PropertySources{"ProtectionStatus"}]
+    SInt32     ProtectionStatus;
+    [PropertySources{"IsAutoUnlockEnabled"}]
+    Boolean     IsAutoUnlockEnabled;
+    [PropertySources{"NoncomplianceDetectedDate"}]
+    String     NoncomplianceDetectedDate;
+    [PropertySources{"EnforcePolicyDate"}]
+    String     EnforcePolicyDate;
+};
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+#pragma deleteclass("Win32Reg_MBAMPolicy", NOFAIL)
+[DYNPROPS]
+Class Win32Reg_MBAMPolicy
+{
+    [key]
+    string KeyName;
+
+    //General encryption requirements
+    UInt32    OsDriveEncryption;
+    UInt32    FixedDataDriveEncryption;
+    UInt32    EncryptionMethod;
+    UInt32    EncryptionMethodWithXtsOs;
+    UInt32    EncryptionMethodWithXtsFdv;
+    UInt32    EncryptionMethodWithXtsRdv;
+
+    //Required protectors properties
+    UInt32    OsDriveProtector;
+    UInt32    FixedDataDriveAutoUnlock;
+    UInt32    FixedDataDrivePassphrase;
+
+    //MBAM Agent fields
+    Uint32    MBAMPolicyEnforced;
+    string    LastConsoleUser;
+    datetime  UserExemptionDate;
+    UInt32    MBAMMachineError;
+
+    // Encoded Computer Name
+    string    EncodedComputerName;
+};
+
+[DYNPROPS]
+Instance of Win32Reg_MBAMPolicy
+{
+    KeyName="BitLocker policy";
+
+    //General encryption requirements
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\FVE\\MDOPBitLockerManagement|ShouldEncryptOsDrive"),Dynamic,Provider("RegPropProv")]
+    OsDriveEncryption;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\FVE\\MDOPBitLockerManagement|ShouldEncryptFixedDataDrive"),Dynamic,Provider("RegPropProv")]
+    FixedDataDriveEncryption;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\FVE|EncryptionMethod"),Dynamic,Provider("RegPropProv")]
+    EncryptionMethod;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\FVE|EncryptionMethodWithXtsOs"),Dynamic,Provider("RegPropProv")]
+    EncryptionMethodWithXtsOs;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\FVE|EncryptionMethodWithXtsFdv"),Dynamic,Provider("RegPropProv")]
+    EncryptionMethodWithXtsFdv;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\FVE|EncryptionMethodWithXtsRdv"),Dynamic,Provider("RegPropProv")]
+    EncryptionMethodWithXtsRdv;
+
+    //Required protectors properties
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MBAM|OSVolumeProtectorPolicy"),Dynamic,Provider("RegPropProv")]
+    OsDriveProtector;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\FVE\\MDOPBitLockerManagement|AutoUnlockFixedDataDrive"),Dynamic,Provider("RegPropProv")]
+    FixedDataDriveAutoUnlock;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\FVE|FDVPassphrase"),Dynamic,Provider("RegPropProv")]
+    FixedDataDrivePassphrase;
+
+    //MBAM agent fields
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MBAM|MBAMPolicyEnforced"),Dynamic,Provider("RegPropProv")]
+    MBAMPolicyEnforced;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MBAM|LastConsoleUser"),Dynamic,Provider("RegPropProv")]
+    LastConsoleUser;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MBAM|UserExemptionDate"),Dynamic,Provider("RegPropProv")]
+    UserExemptionDate; //Registry value should be string in the format of yyyymmddHHMMSS.mmmmmmsUUU
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MBAM|MBAMMachineError"),Dynamic,Provider("RegPropProv")]
+    MBAMMachineError;
+    [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MBAM|EncodedComputerName"),Dynamic,Provider("RegPropProv")]
+    EncodedComputerName;
+};
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+#pragma deleteclass("CCM_OperatingSystemExtended", NOFAIL)
+[Union, ViewSources{"select Name,OperatingSystemSKU from Win32_OperatingSystem"}, ViewSpaces{"\\\\.\\root\\cimv2"},
+dynamic,Provider("MS_VIEW_INSTANCE_PROVIDER")]
+class CCM_OperatingSystemExtended
+{
+    [PropertySources{"Name"},key]
+    string     Name;
+    [PropertySources{"OperatingSystemSKU"}]
+    uint32     SKU;
+};
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+#pragma deleteclass("CCM_ComputerSystemExtended", NOFAIL)
+[Union, ViewSources{"select Name,PCSystemType from Win32_ComputerSystem"}, ViewSpaces{"\\\\.\\root\\cimv2"},
+dynamic,Provider("MS_VIEW_INSTANCE_PROVIDER")]
+class CCM_ComputerSystemExtended
+{
+    [PropertySources{"Name"},key]
+    string     Name;
+    [PropertySources{"PCSystemType"}]
+    uint16     PCSystemType;
+};
+
+//=======================================================
+// Microsoft BitLocker Administration and Monitoring end
+//=======================================================
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+
+//========================
+// Added extensions start
+//========================
+
+//========================
+// Added extensions end
+//========================
